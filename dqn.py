@@ -2,6 +2,7 @@
 
 Includes ReplayBuffer, Q-network, and agent utilities.
 """
+
 from collections import deque, namedtuple
 import random
 import numpy as np
@@ -15,7 +16,7 @@ class ReplayBuffer:
     def __init__(self, capacity: int = 10000):
         self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
-        self.transition = namedtuple('Transition', ['s', 'a', 'r', 's2', 'done'])
+        self.transition = namedtuple("Transition", ["s", "a", "r", "s2", "done"])
 
     def push(self, state, action, reward, next_state, done):
         self.buffer.append(self.transition(state, action, reward, next_state, done))
@@ -50,9 +51,7 @@ class QNetwork(nn.Module):
 
 
 class DQNAgent:
-    def __init__(self, state_dim: int, action_dim: int, device='cpu', lr: float = DEFAULT_DQN_CONFIG.lr,
-                 gamma: float = DEFAULT_DQN_CONFIG.gamma, buffer_size: int = 10000, batch_size: int = DEFAULT_DQN_CONFIG.batch_size,
-                 target_update: int = 1000):
+    def __init__(self, state_dim: int, action_dim: int, device="cpu", lr: float = DEFAULT_DQN_CONFIG.lr, gamma: float = DEFAULT_DQN_CONFIG.gamma, buffer_size: int = 10000, batch_size: int = DEFAULT_DQN_CONFIG.batch_size, target_update: int = 1000):
         self.device = torch.device(device)
         self.q_net = QNetwork(state_dim, action_dim).to(self.device)
         self.target_net = QNetwork(state_dim, action_dim).to(self.device)

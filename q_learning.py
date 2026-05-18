@@ -13,7 +13,16 @@ from utils import save_qtable
 
 
 class QLearningAgent:
-    def __init__(self, env: gym.Env, n_bins: Optional[List[int]] = None, alpha: float = DEFAULT_QLEARNING_CONFIG.alpha, gamma: float = DEFAULT_QLEARNING_CONFIG.gamma, epsilon: float = DEFAULT_QLEARNING_CONFIG.epsilon, epsilon_min: float = DEFAULT_QLEARNING_CONFIG.epsilon_min, epsilon_decay: float = DEFAULT_QLEARNING_CONFIG.epsilon_decay):
+    def __init__(
+        self,
+        env: gym.Env,
+        n_bins: Optional[List[int]] = None,
+        alpha: float = DEFAULT_QLEARNING_CONFIG.alpha,
+        gamma: float = DEFAULT_QLEARNING_CONFIG.gamma,
+        epsilon: float = DEFAULT_QLEARNING_CONFIG.epsilon,
+        epsilon_min: float = DEFAULT_QLEARNING_CONFIG.epsilon_min,
+        epsilon_decay: float = DEFAULT_QLEARNING_CONFIG.epsilon_decay,
+    ):
         """Initialize the tabular Q-Learning agent.
 
         Args:

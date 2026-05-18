@@ -76,7 +76,7 @@ def train_single_seed(env_id: str, config, seed: int, out_dir: str):
     return csv_path
 
 
-def train(env_id: str = "CartPole-v1", config = DEFAULT_DQN_CONFIG):
+def train(env_id: str = "CartPole-v1", config=DEFAULT_DQN_CONFIG):
     ensure_dir(config.out_dir)
     comparison_index = _next_comparison_index(config.out_dir, "dqn_seed_comp")
 
