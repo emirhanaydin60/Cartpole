@@ -24,6 +24,8 @@ python train_qlearning.py
 python train_dqn.py
 ```
 
+Each script now trains sequentially with three seeds by default: `42`, `60`, and `100`, then saves one combined side-by-side comparison figure.
+
 You can also import and call `train()` from either script if you want to run short smoke tests or custom experiments.
 
 Experimental design and report assets

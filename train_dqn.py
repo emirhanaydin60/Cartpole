@@ -5,17 +5,17 @@ Saves model .pth, reward CSV and plots.
 
 import os
 import time
-import random
+from typing import Sequence
 import numpy as np
 import gymnasium as gym
 from gymnasium.spaces import Discrete
 import torch
 from dqn import DQNAgent
-from utils import set_seed, ensure_dir, save_rewards_csv, save_model
-from plots import plot_rewards
+from utils import set_seed, ensure_dir, save_rewards_csv
+from plots import plot_seed_comparison
 
 
-def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/dqn", lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
+def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: float, gamma: float, batch_size: int):
     set_seed(seed)
     ensure_dir(out_dir)
 
@@ -51,7 +51,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_
             total_reward += float(reward)
         epsilon = max(eps_min, epsilon * eps_decay)
         rewards.append(total_reward)
-        if ep % 50 == 0:
+        if ep % 25 == 0:
             print(f"Episode {ep}/{episodes} reward={total_reward:.2f} eps={epsilon:.3f}")
 
     timestamp = int(time.time())
@@ -59,13 +59,28 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_
     agent.save(model_path)
     csv_path = os.path.join(out_dir, f"rewards_{seed}_{timestamp}.csv")
     save_rewards_csv(rewards, csv_path)
-    plot_path = os.path.join(out_dir, f"learning_curve_{seed}_{timestamp}.png")
-    plot_rewards(csv_path, plot_path, ma_window=20)
 
     print("Training complete. Outputs:")
     print(" - model:", model_path)
     print(" - rewards CSV:", csv_path)
-    print(" - plot:", plot_path)
+    return csv_path
+
+
+def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/dqn", lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
+    ensure_dir(out_dir)
+
+    csv_paths = []
+    labels = []
+
+    for index, seed in enumerate(seeds, start=1):
+        print(f"Starting DQN training for seed {seed} ({index}/{len(seeds)})")
+        csv_path = train_single_seed(env_id, episodes, seed, out_dir, lr, gamma, batch_size)
+        csv_paths.append(csv_path)
+        labels.append(f"seed {index}")
+
+    plot_path = os.path.join(out_dir, "dqn_seed_comparison.png")
+    plot_seed_comparison(csv_paths, labels, plot_path, title="DQN Learning Curves by Seed", ma_window=20)
+    print(" - combined plot:", plot_path)
 
 
 if __name__ == "__main__":

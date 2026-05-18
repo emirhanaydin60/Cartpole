@@ -5,14 +5,15 @@ Produces reward CSVs, saves Q-table and generates plots.
 
 import os
 import time
+from typing import Sequence
 import numpy as np
 import gymnasium as gym
 from q_learning import QLearningAgent
 from utils import set_seed, ensure_dir, save_rewards_csv
-from plots import plot_rewards
+from plots import plot_seed_comparison
 
 
-def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/qlearning"):
+def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str):
     set_seed(seed)
     ensure_dir(out_dir)
 
@@ -47,14 +48,27 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_
     csv_path = os.path.join(out_dir, f"rewards_{seed}_{timestamp}.csv")
     save_rewards_csv(rewards, csv_path)
 
-    # generate plots
-    plot_path = os.path.join(out_dir, f"learning_curve_{seed}_{timestamp}.png")
-    plot_rewards(csv_path, plot_path, ma_window=20)
-
     print("Training complete. Outputs:")
     print(" - q-table:", q_path + ".npy")
     print(" - rewards CSV:", csv_path)
-    print(" - plot:", plot_path)
+    return csv_path
+
+
+def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/qlearning"):
+    ensure_dir(out_dir)
+
+    csv_paths = []
+    labels = []
+
+    for index, seed in enumerate(seeds, start=1):
+        print(f"Starting Q-Learning training for seed {seed} ({index}/{len(seeds)})")
+        csv_path = train_single_seed(env_id, episodes, seed, out_dir)
+        csv_paths.append(csv_path)
+        labels.append(f"seed {index}")
+
+    plot_path = os.path.join(out_dir, "qlearning_seed_comparison.png")
+    plot_seed_comparison(csv_paths, labels, plot_path, title="Q-Learning Learning Curves by Seed", ma_window=20)
+    print(" - combined plot:", plot_path)
 
 
 if __name__ == "__main__":
