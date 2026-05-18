@@ -72,15 +72,30 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
 
     csv_paths = []
     labels = []
+    annotation_texts = []
 
     for index, seed in enumerate(seeds, start=1):
         print(f"Starting DQN training for seed {seed} ({index}/{len(seeds)})")
         csv_path = train_single_seed(env_id, episodes, seed, out_dir, lr, gamma, batch_size)
         csv_paths.append(csv_path)
-        labels.append(f"seed {index}")
+        labels.append(str(index))
+        annotation_texts.append(
+            f"seed={seed}\n"
+            f"episodes={episodes}\n"
+            f"lr={lr}\n"
+            f"gamma={gamma}\n"
+            f"batch={batch_size}"
+        )
 
     plot_path = os.path.join(out_dir, f"dqn_seed_comparison_{run_id}.png")
-    plot_seed_comparison(csv_paths, labels, plot_path, title="DQN Learning Curves by Seed", ma_window=20)
+    plot_seed_comparison(
+        csv_paths,
+        labels,
+        plot_path,
+        title="DQN Learning Curves by Seed",
+        ma_window=20,
+        annotation_texts=annotation_texts,
+    )
     print(" - combined plot:", plot_path)
 
 

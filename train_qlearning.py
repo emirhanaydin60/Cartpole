@@ -61,15 +61,30 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
 
     csv_paths = []
     labels = []
+    annotation_texts = []
 
     for index, seed in enumerate(seeds, start=1):
         print(f"Starting Q-Learning training for seed {seed} ({index}/{len(seeds)})")
         csv_path = train_single_seed(env_id, episodes, seed, out_dir)
         csv_paths.append(csv_path)
-        labels.append(f"seed {index}")
+        labels.append(str(index))
+        annotation_texts.append(
+            f"seed={seed}\n"
+            f"episodes={episodes}\n"
+            f"alpha=0.1\n"
+            f"gamma=0.99\n"
+            f"eps_decay=0.995"
+        )
 
     plot_path = os.path.join(out_dir, f"qlearning_seed_comparison_{run_id}.png")
-    plot_seed_comparison(csv_paths, labels, plot_path, title="Q-Learning Learning Curves by Seed", ma_window=20)
+    plot_seed_comparison(
+        csv_paths,
+        labels,
+        plot_path,
+        title="Q-Learning Learning Curves by Seed",
+        ma_window=20,
+        annotation_texts=annotation_texts,
+    )
     print(" - combined plot:", plot_path)
 
 
