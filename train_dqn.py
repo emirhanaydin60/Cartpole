@@ -2,26 +2,31 @@
 
 Saves model .pth, reward CSV and plots.
 """
+
 import os
 import time
 import random
 import numpy as np
 import gymnasium as gym
+from gymnasium.spaces import Discrete
 import torch
 from dqn import DQNAgent
 from utils import set_seed, ensure_dir, save_rewards_csv, save_model
 from plots import plot_rewards
 
 
-def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/dqn",
-          lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
+def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/dqn", lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
     set_seed(seed)
     ensure_dir(out_dir)
 
     env = gym.make(env_id)
     obs, _ = env.reset(seed=seed)
-    state_dim = env.observation_space.shape[0]
-    action_dim = env.action_space.n
+    if env.observation_space.shape is None:
+        raise ValueError("Expected a vector observation space with a fixed shape.")
+    state_dim = int(env.observation_space.shape[0])
+    if not isinstance(env.action_space, Discrete):
+        raise ValueError("Expected a discrete action space for CartPole-v1.")
+    action_dim = int(env.action_space.n)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     agent = DQNAgent(state_dim, action_dim, device=device, lr=lr, gamma=gamma, batch_size=batch_size)
@@ -43,7 +48,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_
             agent.store(obs, action, reward, next_obs, done)
             loss = agent.train_step()
             obs = next_obs
-            total_reward += reward
+            total_reward += float(reward)
         epsilon = max(eps_min, epsilon * eps_decay)
         rewards.append(total_reward)
         if ep % 50 == 0:

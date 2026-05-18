@@ -3,6 +3,7 @@
 This module provides a QLearningAgent class that discretizes continuous states
 into bins and performs tabular Q-Learning with epsilon-greedy exploration.
 """
+
 from typing import List, Tuple
 import numpy as np
 import gymnasium as gym
@@ -10,8 +11,7 @@ from utils import save_qtable
 
 
 class QLearningAgent:
-    def __init__(self, env: gym.Env, n_bins: List[int] = None, alpha: float = 0.1, gamma: float = 0.99,
-                 epsilon: float = 1.0, epsilon_min: float = 0.01, epsilon_decay: float = 0.995):
+    def __init__(self, env: gym.Env, n_bins: List[int] = None, alpha: float = 0.1, gamma: float = 0.99, epsilon: float = 1.0, epsilon_min: float = 0.01, epsilon_decay: float = 0.995):
         """Initialize the tabular Q-Learning agent.
 
         Args:
@@ -40,8 +40,7 @@ class QLearningAgent:
         self.obs_space_high = np.array([4.8, 5.0, 0.418, 5.0])
 
         # create bins for each dimension
-        self.bins = [np.linspace(self.obs_space_low[i], self.obs_space_high[i], self.n_bins[i] - 1)
-                     for i in range(4)]
+        self.bins = [np.linspace(self.obs_space_low[i], self.obs_space_high[i], self.n_bins[i] - 1) for i in range(4)]
 
         # Q-table shape: bins per dimension + actions
         action_size = env.action_space.n
