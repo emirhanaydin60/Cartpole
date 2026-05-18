@@ -3,7 +3,7 @@
 Project comparing tabular Q-Learning and Deep Q-Network (DQN) on Gymnasium `CartPole-v1`.
 
 Prerequisites
-- Create and activate conda env: `conda activate RL_v1` (Important: her kodu çalıştırmadan önce conda activate RL_v1 demeyi unutma.)
+- Create and activate conda env: `conda activate RL_v1`
 - Install dependencies: `pip install -r requirements.txt`
 
 Files
@@ -20,9 +20,11 @@ How to run
 2. From project directory run (examples):
 
 ```bash
-python -m project.train_qlearning
-python -m project.train_dqn
+python train_qlearning.py
+python train_dqn.py
 ```
+
+You can also import and call `train()` from either script if you want to run short smoke tests or custom experiments.
 
 Experimental design and report assets
 - The `report_assets/` folder contains `figures/` and `tables/` for plots and CSV summaries.

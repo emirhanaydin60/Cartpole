@@ -8,9 +8,9 @@ import random
 import numpy as np
 import gymnasium as gym
 import torch
-from .dqn import DQNAgent
-from .utils import set_seed, ensure_dir, save_rewards_csv, save_model
-from .plots import plot_rewards
+from dqn import DQNAgent
+from utils import set_seed, ensure_dir, save_rewards_csv, save_model
+from plots import plot_rewards
 
 
 def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/dqn",

@@ -6,7 +6,7 @@ into bins and performs tabular Q-Learning with epsilon-greedy exploration.
 from typing import List, Tuple
 import numpy as np
 import gymnasium as gym
-from .utils import save_qtable
+from utils import save_qtable
 
 
 class QLearningAgent:

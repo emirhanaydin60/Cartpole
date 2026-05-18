@@ -6,9 +6,9 @@ import os
 import time
 import numpy as np
 import gymnasium as gym
-from .q_learning import QLearningAgent
-from .utils import set_seed, ensure_dir, save_rewards_csv
-from .plots import plot_rewards
+from q_learning import QLearningAgent
+from utils import set_seed, ensure_dir, save_rewards_csv
+from plots import plot_rewards
 
 
 def train(env_id: str = "CartPole-v1", episodes: int = 500, seed: int = 42, out_dir: str = "results/qlearning"):
