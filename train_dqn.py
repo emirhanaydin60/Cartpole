@@ -82,12 +82,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
 
     csv_paths = []
     labels = []
-    figure_annotation_text = (
-        f"episodes={episodes}\n"
-        f"lr={lr}\n"
-        f"gamma={gamma}\n"
-        f"batch={batch_size}"
-    )
+    figure_annotation_text = f"episodes={episodes}\n" f"lr={lr}\n" f"gamma={gamma}\n" f"batch={batch_size}"
 
     for index, seed in enumerate(seeds, start=1):
         print(f"Starting DQN training for seed {seed} ({index}/{len(seeds)})")

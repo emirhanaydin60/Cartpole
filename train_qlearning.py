@@ -71,12 +71,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
 
     csv_paths = []
     labels = []
-    figure_annotation_text = (
-        f"episodes={episodes}\n"
-        f"alpha=0.1\n"
-        f"gamma=0.99\n"
-        f"eps_decay=0.995"
-    )
+    figure_annotation_text = f"episodes={episodes}\n" f"alpha=0.1\n" f"gamma=0.99\n" f"eps_decay=0.995"
 
     for index, seed in enumerate(seeds, start=1):
         print(f"Starting Q-Learning training for seed {seed} ({index}/{len(seeds)})")
