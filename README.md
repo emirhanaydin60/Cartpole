@@ -7,6 +7,7 @@ Prerequisites
 - Install dependencies: `pip install -r requirements.txt`
 
 Files
+- `experiment_config.py`: Centralized default hyperparameters for all runs.
 - `q_learning.py`: Tabular Q-Learning agent with state discretization.
 - `dqn.py`: DQN implementation (PyTorch) with replay buffer and target network.
 - `train_qlearning.py`: Train script for Q-Learning, saves Q-table and rewards CSV.

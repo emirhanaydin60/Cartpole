@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from experiment_config import DEFAULT_DQN_CONFIG
 
 
 class ReplayBuffer:
@@ -49,8 +50,8 @@ class QNetwork(nn.Module):
 
 
 class DQNAgent:
-    def __init__(self, state_dim: int, action_dim: int, device='cpu', lr: float = 1e-3,
-                 gamma: float = 0.99, buffer_size: int = 10000, batch_size: int = 64,
+    def __init__(self, state_dim: int, action_dim: int, device='cpu', lr: float = DEFAULT_DQN_CONFIG.lr,
+                 gamma: float = DEFAULT_DQN_CONFIG.gamma, buffer_size: int = 10000, batch_size: int = DEFAULT_DQN_CONFIG.batch_size,
                  target_update: int = 1000):
         self.device = torch.device(device)
         self.q_net = QNetwork(state_dim, action_dim).to(self.device)

@@ -4,14 +4,16 @@ This module provides a QLearningAgent class that discretizes continuous states
 into bins and performs tabular Q-Learning with epsilon-greedy exploration.
 """
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 import numpy as np
 import gymnasium as gym
+from gymnasium.spaces import Discrete
+from experiment_config import DEFAULT_QLEARNING_CONFIG
 from utils import save_qtable
 
 
 class QLearningAgent:
-    def __init__(self, env: gym.Env, n_bins: List[int] = None, alpha: float = 0.1, gamma: float = 0.99, epsilon: float = 1.0, epsilon_min: float = 0.01, epsilon_decay: float = 0.995):
+    def __init__(self, env: gym.Env, n_bins: Optional[List[int]] = None, alpha: float = DEFAULT_QLEARNING_CONFIG.alpha, gamma: float = DEFAULT_QLEARNING_CONFIG.gamma, epsilon: float = DEFAULT_QLEARNING_CONFIG.epsilon, epsilon_min: float = DEFAULT_QLEARNING_CONFIG.epsilon_min, epsilon_decay: float = DEFAULT_QLEARNING_CONFIG.epsilon_decay):
         """Initialize the tabular Q-Learning agent.
 
         Args:
@@ -32,7 +34,7 @@ class QLearningAgent:
 
         # default bins if not provided
         if n_bins is None:
-            n_bins = [6, 12, 6, 12]
+            n_bins = list(DEFAULT_QLEARNING_CONFIG.n_bins)
         self.n_bins = n_bins
 
         # define observation bounds (CartPole-v1)
@@ -43,7 +45,9 @@ class QLearningAgent:
         self.bins = [np.linspace(self.obs_space_low[i], self.obs_space_high[i], self.n_bins[i] - 1) for i in range(4)]
 
         # Q-table shape: bins per dimension + actions
-        action_size = env.action_space.n
+        if not isinstance(env.action_space, Discrete):
+            raise ValueError("Expected a discrete action space for CartPole-v1.")
+        action_size = int(env.action_space.n)
         self.q_table = np.zeros(tuple(self.n_bins) + (action_size,))
 
     def discretize(self, obs: np.ndarray) -> Tuple[int, int, int, int]:

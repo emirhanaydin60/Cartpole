@@ -5,7 +5,6 @@ Saves model .pth, reward CSV and plots.
 
 import os
 import time
-from typing import Sequence
 import numpy as np
 import gymnasium as gym
 from gymnasium.spaces import Discrete
@@ -13,6 +12,7 @@ import torch
 from dqn import DQNAgent
 from utils import set_seed, ensure_dir, save_rewards_csv
 from plots import plot_seed_comparison
+from experiment_config import DEFAULT_DQN_CONFIG, format_dqn_box
 
 
 def _next_comparison_index(out_dir: str, prefix: str) -> int:
@@ -25,7 +25,7 @@ def _next_comparison_index(out_dir: str, prefix: str) -> int:
     return max(existing_indices, default=0) + 1
 
 
-def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: float, gamma: float, batch_size: int):
+def train_single_seed(env_id: str, config, seed: int, out_dir: str):
     set_seed(seed)
     ensure_dir(out_dir)
 
@@ -39,15 +39,15 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: f
     action_dim = int(env.action_space.n)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    agent = DQNAgent(state_dim, action_dim, device=device, lr=lr, gamma=gamma, batch_size=batch_size)
+    agent = DQNAgent(state_dim, action_dim, device=device, lr=config.lr, gamma=config.gamma, batch_size=config.batch_size)
 
-    epsilon = 1.0
-    eps_min = 0.01
-    eps_decay = 0.995
+    epsilon = config.epsilon
+    eps_min = config.epsilon_min
+    eps_decay = config.epsilon_decay
 
     rewards = []
 
-    for ep in range(1, episodes + 1):
+    for ep in range(1, config.episodes + 1):
         obs, _ = env.reset()
         done = False
         total_reward = 0.0
@@ -62,7 +62,7 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: f
         epsilon = max(eps_min, epsilon * eps_decay)
         rewards.append(total_reward)
         if ep % 25 == 0:
-            print(f"Episode {ep}/{episodes} reward={total_reward:.2f} eps={epsilon:.3f}")
+            print(f"Episode {ep}/{config.episodes} reward={total_reward:.2f} eps={epsilon:.3f}")
 
     timestamp = int(time.time())
     model_path = os.path.join(out_dir, f"dqn_model_{seed}_{timestamp}.pth")
@@ -76,21 +76,21 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: f
     return csv_path
 
 
-def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/dqn", lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
-    ensure_dir(out_dir)
-    comparison_index = _next_comparison_index(out_dir, "dqn_seed_comp")
+def train(env_id: str = "CartPole-v1", config = DEFAULT_DQN_CONFIG):
+    ensure_dir(config.out_dir)
+    comparison_index = _next_comparison_index(config.out_dir, "dqn_seed_comp")
 
     csv_paths = []
     labels = []
-    figure_annotation_text = f"episodes={episodes}\n" f"lr={lr}\n" f"gamma={gamma}\n" f"batch={batch_size}"
+    figure_annotation_text = format_dqn_box(config)
 
-    for index, seed in enumerate(seeds, start=1):
-        print(f"Starting DQN training for seed {seed} ({index}/{len(seeds)})")
-        csv_path = train_single_seed(env_id, episodes, seed, out_dir, lr, gamma, batch_size)
+    for index, seed in enumerate(config.seeds, start=1):
+        print(f"Starting DQN training for seed {seed} ({index}/{len(config.seeds)})")
+        csv_path = train_single_seed(env_id, config, seed, config.out_dir)
         csv_paths.append(csv_path)
         labels.append(f"Seed {index}")
 
-    plot_path = os.path.join(out_dir, f"dqn_seed_comp_{comparison_index}.png")
+    plot_path = os.path.join(config.out_dir, f"dqn_seed_comp_{comparison_index}.png")
     plot_seed_comparison(
         csv_paths,
         labels,
