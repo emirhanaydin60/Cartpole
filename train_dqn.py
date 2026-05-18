@@ -68,6 +68,7 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str, lr: f
 
 def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/dqn", lr: float = 1e-3, gamma: float = 0.99, batch_size: int = 64):
     ensure_dir(out_dir)
+    run_id = int(time.time())
 
     csv_paths = []
     labels = []
@@ -78,7 +79,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
         csv_paths.append(csv_path)
         labels.append(f"seed {index}")
 
-    plot_path = os.path.join(out_dir, "dqn_seed_comparison.png")
+    plot_path = os.path.join(out_dir, f"dqn_seed_comparison_{run_id}.png")
     plot_seed_comparison(csv_paths, labels, plot_path, title="DQN Learning Curves by Seed", ma_window=20)
     print(" - combined plot:", plot_path)
 

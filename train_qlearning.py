@@ -34,9 +34,10 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str):
             next_obs, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
             next_state_idx = agent.discretize(next_obs)
-            agent.update(state_idx, action, reward, next_state_idx, done)
+            reward_value = float(reward)
+            agent.update(state_idx, action, reward_value, next_state_idx, done)
             state_idx = next_state_idx
-            total_reward += reward
+            total_reward += reward_value
         agent.decay_epsilon()
         rewards.append(total_reward)
         if ep % 50 == 0:
@@ -56,6 +57,7 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str):
 
 def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/qlearning"):
     ensure_dir(out_dir)
+    run_id = int(time.time())
 
     csv_paths = []
     labels = []
@@ -66,7 +68,7 @@ def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int]
         csv_paths.append(csv_path)
         labels.append(f"seed {index}")
 
-    plot_path = os.path.join(out_dir, "qlearning_seed_comparison.png")
+    plot_path = os.path.join(out_dir, f"qlearning_seed_comparison_{run_id}.png")
     plot_seed_comparison(csv_paths, labels, plot_path, title="Q-Learning Learning Curves by Seed", ma_window=20)
     print(" - combined plot:", plot_path)
 
