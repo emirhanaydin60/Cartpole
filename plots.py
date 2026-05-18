@@ -63,13 +63,11 @@ def plot_seed_comparison(
     out_path: str,
     title: str,
     ma_window: int = 20,
-    annotation_texts: list | None = None,
+    figure_annotation_text: str | None = None,
 ):
     """Plot one reward history per seed in a single side-by-side figure."""
     if len(csv_paths) != len(seed_labels):
         raise ValueError("csv_paths and seed_labels must have the same length.")
-    if annotation_texts is not None and len(annotation_texts) != len(csv_paths):
-        raise ValueError("annotation_texts must have the same length as csv_paths.")
 
     n_plots = len(csv_paths)
     fig, axes = plt.subplots(1, n_plots, figsize=(6 * n_plots, 4.8), sharey=True)
@@ -91,26 +89,24 @@ def plot_seed_comparison(
         ax.grid(True, alpha=0.3)
         ax.legend(fontsize=8)
 
-        if annotation_texts is not None:
-            ax.text(
-                0.98,
-                0.98,
-                annotation_texts[index],
-                transform=ax.transAxes,
-                ha="right",
-                va="top",
-                fontsize=8,
-                family="monospace",
-                bbox={
-                    "boxstyle": "round,pad=0.35",
-                    "facecolor": "white",
-                    "edgecolor": "0.5",
-                    "alpha": 0.9,
-                },
-            )
-
-    fig.suptitle(title, fontsize=16)
-    fig.tight_layout(rect=[0, 0.03, 1, 0.92])
+    fig.suptitle(title, fontsize=16, y=0.995)
+    if figure_annotation_text is not None:
+        fig.text(
+            0.985,
+            0.985,
+            figure_annotation_text,
+            ha="right",
+            va="top",
+            fontsize=8,
+            family="monospace",
+            bbox={
+                "boxstyle": "round,pad=0.35",
+                "facecolor": "white",
+                "edgecolor": "0.5",
+                "alpha": 0.9,
+            },
+        )
+    fig.tight_layout(rect=[0, 0.03, 1, 0.9])
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     fig.savefig(out_path, dpi=300)
     plt.close(fig)

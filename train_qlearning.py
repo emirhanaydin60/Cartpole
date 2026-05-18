@@ -13,6 +13,16 @@ from utils import set_seed, ensure_dir, save_rewards_csv
 from plots import plot_seed_comparison
 
 
+def _next_comparison_index(out_dir: str, prefix: str) -> int:
+    existing_indices = []
+    for filename in os.listdir(out_dir):
+        if filename.startswith(prefix) and filename.endswith(".png"):
+            middle = filename[len(prefix) + 1 : -4]
+            if middle.isdigit():
+                existing_indices.append(int(middle))
+    return max(existing_indices, default=0) + 1
+
+
 def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str):
     set_seed(seed)
     ensure_dir(out_dir)
@@ -57,33 +67,31 @@ def train_single_seed(env_id: str, episodes: int, seed: int, out_dir: str):
 
 def train(env_id: str = "CartPole-v1", episodes: int = 500, seeds: Sequence[int] = (42, 60, 100), out_dir: str = "results/qlearning"):
     ensure_dir(out_dir)
-    run_id = int(time.time())
+    comparison_index = _next_comparison_index(out_dir, "qlearning_seed_comp")
 
     csv_paths = []
     labels = []
-    annotation_texts = []
+    figure_annotation_text = (
+        f"episodes={episodes}\n"
+        f"alpha=0.1\n"
+        f"gamma=0.99\n"
+        f"eps_decay=0.995"
+    )
 
     for index, seed in enumerate(seeds, start=1):
         print(f"Starting Q-Learning training for seed {seed} ({index}/{len(seeds)})")
         csv_path = train_single_seed(env_id, episodes, seed, out_dir)
         csv_paths.append(csv_path)
-        labels.append(str(index))
-        annotation_texts.append(
-            f"seed={seed}\n"
-            f"episodes={episodes}\n"
-            f"alpha=0.1\n"
-            f"gamma=0.99\n"
-            f"eps_decay=0.995"
-        )
+        labels.append(f"Seed {index}")
 
-    plot_path = os.path.join(out_dir, f"qlearning_seed_comparison_{run_id}.png")
+    plot_path = os.path.join(out_dir, f"qlearning_seed_comp_{comparison_index}.png")
     plot_seed_comparison(
         csv_paths,
         labels,
         plot_path,
         title="Q-Learning Learning Curves by Seed",
         ma_window=20,
-        annotation_texts=annotation_texts,
+        figure_annotation_text=figure_annotation_text,
     )
     print(" - combined plot:", plot_path)
 
