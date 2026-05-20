@@ -9,11 +9,11 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class QLearningConfig:
     episodes: int = 500
-    alpha: float = 0.1
-    gamma: float = 0.99
-    epsilon: float = 1.0
+    alpha: float = 0.001
+    gamma: float = 0.8
+    epsilon: float = 0.8
     epsilon_min: float = 0.01
-    epsilon_decay: float = 0.995
+    epsilon_decay: float = 0.9
     n_bins: tuple[int, int, int, int] = (6, 12, 6, 12)
     seeds: tuple[int, int, int] = (42, 60, 100)
     out_dir: str = "results/qlearning"
@@ -22,9 +22,9 @@ class QLearningConfig:
 @dataclass(frozen=True)
 class DQNConfig:
     episodes: int = 500
-    lr: float = 1e-3
+    lr: float = 1e-4
     gamma: float = 0.99
-    epsilon: float = 1.0
+    epsilon: float = 0.95
     epsilon_min: float = 0.01
     epsilon_decay: float = 0.995
     batch_size: int = 64
@@ -37,28 +37,8 @@ DEFAULT_DQN_CONFIG = DQNConfig()
 
 
 def format_qlearning_box(config: QLearningConfig = DEFAULT_QLEARNING_CONFIG) -> str:
-    return "\n".join(
-        [
-            f"episodes={config.episodes}",
-            f"alpha={config.alpha}",
-            f"gamma={config.gamma}",
-            f"epsilon={config.epsilon}",
-            f"eps_min={config.epsilon_min}",
-            f"eps_decay={config.epsilon_decay}",
-            f"bins={config.n_bins}",
-        ]
-    )
+    return "\n".join([f"alpha/lr={config.alpha}", f"gamma/dis.fac.={config.gamma}", f"epsilon/exp.rate.={config.epsilon}"])
 
 
 def format_dqn_box(config: DQNConfig = DEFAULT_DQN_CONFIG) -> str:
-    return "\n".join(
-        [
-            f"episodes={config.episodes}",
-            f"alpha={config.lr}",
-            f"gamma={config.gamma}",
-            f"epsilon={config.epsilon}",
-            f"eps_min={config.epsilon_min}",
-            f"eps_decay={config.epsilon_decay}",
-            "bins=n/a",
-        ]
-    )
+    return "\n".join([f"alpha/lr={config.lr}", f"gamma/dis.fac.={config.gamma}", f"epsilon/exp.rate.={config.epsilon}"])
